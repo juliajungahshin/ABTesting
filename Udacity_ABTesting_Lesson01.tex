@@ -1,0 +1,190 @@
+\documentclass[10pt]{article}
+\usepackage[utf8]{inputenc}	% Para caracteres en español
+\usepackage{amsmath,amsthm,amsfonts,amssymb,amscd}
+\usepackage{multirow,booktabs}
+\usepackage[table]{xcolor}
+\usepackage{fullpage}
+\usepackage{lastpage}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{mathrsfs}
+\usepackage{wrapfig}
+\usepackage{setspace}
+\usepackage{calc}
+\usepackage{multicol}
+\usepackage{cancel}
+\usepackage[retainorgcmds]{IEEEtrantools}
+\usepackage[margin=3cm]{geometry}
+\usepackage{amsmath}
+\newlength{\tabcont}
+\setlength{\parindent}{0.0in}
+\setlength{\parskip}{0.03in}
+\usepackage{empheq}
+\usepackage{framed}
+\usepackage[most]{tcolorbox}
+\usepackage{xcolor}
+\colorlet{shadecolor}{yellow!15}
+\parindent 0in
+\parskip 10pt
+\geometry{margin=0.65in, headsep=0.25in}
+\theoremstyle{definition}
+\newtheorem{defn}{Definition}
+\newtheorem{reg}{Rule}
+\newtheorem{exer}{Exercise}
+\newtheorem{note}{Note}
+\begin{document}
+\setcounter{section}{0}
+\title{A/B Testing Notes}
+
+\thispagestyle{empty}
+
+\begin{center}
+{\LARGE \bf Udacity A/B Testing Lesson 1 Notes}\\
+{\large Jung Ah Shin}\\
+Jan 2021
+\end{center}
+\section{Overview of A/B Testing}
+\subsection{Introduction}
+A/B testing is a general methodology used online when you want to test out a new product or feature.
+
+Two sets of users: Existing product vs. New version 
+
+When NOT to use A/B Testing:
+\begin{itemize}
+\item A/B Testing is not useful for testing new experiences
+\begin{itemize}
+\item What is the baseline for comparison?
+\item How much time you need for users to adapt to the new experience?
+\end{itemize}
+\item Time (e.g. apartment rentals -> people don't look for apartments that often) 
+\item Cannot tell you if you're missing something
+\end{itemize}
+
+
+\begin{center}
+\begin{table}[h]
+\centering
+%\small
+%%\vspace{-2mm}
+\caption{When to use A/B Testing Examples}
+%%\vspace{-2mm}
+\begin{tabular}{ |l|l|}
+  \hline
+  \textbf{Useful} & \textbf{Not Useful} \\
+  \hline
+  \textbf{Movie recommendation site - new ranking algorithm} & \textbf{Online shopping company - Is my site complete?}\\ :  clear control group and metrics & : could try specific product,but cannot know in general  \\
+  \textbf{Change backend - page load time, results users see} & \textbf{Add premium service} \\
+  : good if computing power available for both & : could gather information but cannot fully test \\ 
+  \textbf{Test layout of initial page} & \textbf{Update brand, including main logo} \\ : clear control and metrics & : surprisingly emotional \\
+  & \textbf{Website selling cars} \\ 
+  & : too long and do not have data \\
+  \hline
+\end{tabular}
+%%\vspace{-2mm}
+\end{table}
+\end{center}
+Other techniques to use to gather information about users (Qualitative)
+\begin{itemize}
+    \item Logs of what users did on the website - Analyze retrospectively to build hypothesis
+     \item User experience research
+     \item Focus groups
+     \item Surveys
+     \item Human evaluation
+\end{itemize}
+
+A/B Testing needs to have a consistent response from your control and experiment group 
+
+Goal of A/B Testing is to design an experiment that is going to be robust and give you repeatable results so that one can make a good decision 
+
+\subsection{Business Example}
+\textbf{E.g. Imagine an education company like Udacity called Audacity that focuses on creating finance courses}
+Goal: To increase student engagement
+User flow: Customer funnel (largest number of  events at the top, where customers go back and forth the funnel)
+\begin{itemize}
+    \item Homepage visits
+    \item Exploring the site
+    \item Create account
+    \item Complete a purchase/class
+\end{itemize}
+Experiment 
+Initial Hypothesis: Change the 'Start Now' button from \textit{orange} to \textit{pink} will increase how many students explore Audacity's courses
+
+Which metric to use?
+\begin{itemize}
+    \item Total number of courses completed (BUT time consuming and not practical as it can take months for students to complete the course)
+    \item  Number of clicks (BUT if more total clicks in one version but with lower ration than other version) 
+    \item CTR (click-through-rate) = $\frac{Number of clicks}{Number of page  views}$
+    \item CTR (click-through-probability) = $\frac{Unique visitors who click}{Unique visitors to page}$
+\end{itemize}
+
+\textit{Use rate when you want to measure the usability of a site and a probability when you want to measure a total impact and disregard double-clicks, reloads, etc.}
+
+Updated Hypothesis: Change the 'Start Now' button from \textit{orange} to \textit{pink} will increase the click-through-probability of the button
+
+Repeated measurement of click-through-probability
+\begin{itemize}
+    \item visitors = 1000
+    \item unique clicks = 100
+    \item click-through-probability $\approx 10\%$
+    
+    Which results would surprise you if you repeated the measurement?
+    \begin{itemize}
+        \item 100
+        \item 101
+        \item 110
+        \item 150 (above what I expected)
+        \item 900 (above what I expected)
+    \end{itemize}
+\end{itemize}
+
+\subsection{Statistics Review}
+\begin{itemize}
+    \begin{shaded}
+    \item \textbf{Binomial Distribution} \\ (Successes/Failures)
+    e.g. (click = success,  no click = failure)
+    \begin{itemize}
+        \item biased user who has $p = \frac{3}{4}$ of clicking a page 
+        \item success = click, failure = no click
+        \item As $N \to \infty$, binomial $\to$ normal
+        \item $mean = p$, $std dev = \sqrt{\frac{p(1-p)}{N}}$
+        \item Assume p not known
+        \begin{itemize}
+            \item e.g. N = 20, clicks = 16, Estimate the bias $\hat{p} = \frac{4}{5}$
+        \end{itemize}
+        \item When to use binomial
+        \begin{itemize}
+            \item 2 types of outcomes
+            \item independent events
+            \item identical distribution: p same for all 
+        \end{itemize}
+    \end{itemize}
+    \end{shaded}
+    \begin{shaded}
+    \item \textbf{Confidence Intervals}\\
+    For a 95$\%$ confidence interval, if we theoretically repeated the experiment over and over again, we would expect the interval we construct around the sample mean to cover the true value in the population 95$\%$ of the time
+    \begin{itemize}
+        \item $\hat{p} = \frac{X}{N}$ where X = number of users clicked, N = number of users
+        \item e.g. $\hat{p} = 0.1$
+        \item \textit{To use normal distribution if $N*\hat{p} > 5$ and $N(1-\hat{p}>5$}
+        \item standard error SE = $\sqrt{\frac{p(1-p)}{N}}$
+        \item margin of error m = $z-score * SE$ = $z * \sqrt{\frac{\hat{p}(1-\hat{p)}}{N}}$ \\
+        The amount of random variation we expect in our sample is a proportion of both successes and the size of the sample. When the success probability is further from 0.5, then SE would be smaller, which means CI will be smaller. \\
+        Similarly, if N is larger, the SE and CI will be smaller. 
+        For 95$\%$ CI, z-score will be 1.96 for two-tailed CI.\\
+        m = 0.019
+        margin = 0.081 to 0.119 
+    \end{itemize}
+    \end{shaded}
+    \begin{shaded}
+    \item \textbf{Hypothesis Testing}
+    \begin{itemize}
+        \item Null hypothesis: There is no difference in click-through-probability between our control and experiment
+        \item Alternative hypothesis: Are we interested in the difference, or just higher or lower?
+    \end{itemize}
+    \end{shaded}
+\end{itemize}
+
+
+
+
+\end{document}

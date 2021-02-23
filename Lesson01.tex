@@ -1,0 +1,350 @@
+\documentclass[10pt]{article}
+\usepackage[utf8]{inputenc}	% Para caracteres en español
+\usepackage{amsmath,amsthm,amsfonts,amssymb,amscd}
+\usepackage{multirow,booktabs}
+\usepackage[table]{xcolor}
+\usepackage{fullpage}
+\usepackage{lastpage}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{mathrsfs}
+\usepackage{wrapfig}
+\usepackage{setspace}
+\usepackage{calc}
+\usepackage{multicol}
+\usepackage{cancel}
+\usepackage[retainorgcmds]{IEEEtrantools}
+\usepackage[margin=3cm]{geometry}
+\usepackage{amsmath}
+\newlength{\tabcont}
+\setlength{\parindent}{0.0in}
+\setlength{\parskip}{0.03in}
+\usepackage{empheq}
+\usepackage{framed}
+\usepackage[most]{tcolorbox}
+\usepackage{xcolor}
+\colorlet{shadecolor}{yellow!15}
+
+\parindent 0in
+\parskip 10pt
+\geometry{margin=0.65in, headsep=0.25in}
+\theoremstyle{definition}
+\newtheorem{defn}{Definition}
+\newtheorem{reg}{Rule}
+\newtheorem{exer}{Exercise}
+\newtheorem{note}{Note}
+\begin{document}
+\setcounter{section}{0}
+\title{A/B Testing Notes}
+
+\thispagestyle{empty}
+
+\begin{center}
+{\LARGE \bf Udacity A/B Testing Lesson 1 Notes}\\
+{\large Jung Ah Shin}\\
+Jan 2021
+\end{center}
+\section{Overview of A/B Testing}
+\subsection{Introduction}
+A/B testing is a general methodology used online when you want to test out a new product or feature.
+
+Two sets of users: Existing product vs. New version 
+
+When NOT to use A/B Testing:
+\begin{itemize}
+\item A/B Testing is \textbf{not} useful for testing new experiences
+\begin{itemize}
+\item What is the baseline for comparison?
+\item How much time you need for users to adapt to the new experience?
+\end{itemize}
+\item Time (e.g. apartment rentals $\rightarrow$ people don't look for apartments that often) 
+\item Cannot tell you if you're missing something
+\end{itemize}
+
+
+\begin{center}
+\begin{table}[h]
+\centering
+%\small
+%%\vspace{-2mm}
+\caption{When to use A/B Testing Examples}
+%%\vspace{-2mm}
+\begin{tabular}{ |l|l|}
+  \hline
+  \textbf{Useful} & \textbf{Not Useful} \\
+  \hline
+  \textbf{Movie recommendation site - new ranking algorithm} & \textbf{Online shopping company - Is my site complete?}\\ :  clear control group and metrics & : could try specific product,but cannot know in general  \\
+  \textbf{Change backend - page load time, results users see} & \textbf{Add premium service} \\
+  : good if computing power available for both & : could gather information but cannot fully test \\ 
+  \textbf{Test layout of initial page} & \textbf{Update brand, including main logo} \\ : clear control and metrics & : surprisingly emotional \\
+  & \textbf{Website selling cars} \\ 
+  & : too long and do not have data \\
+  \hline
+\end{tabular}
+%%\vspace{-2mm}
+\end{table}
+\end{center}
+Other techniques to use to gather information about users (Qualitative)
+\begin{itemize}
+    \item Logs of what users did on the website - Analyze retrospectively to build hypothesis
+     \item User experience research
+     \item Focus groups
+     \item Surveys
+     \item Human evaluation
+\end{itemize}
+
+A/B Testing needs to have a consistent response from your control and experiment group 
+
+Goal of A/B Testing is to design an experiment that is going to be robust and give you repeatable results so that one can make a good decision 
+
+\subsection{Business Example}
+\textbf{E.g. Imagine an education company like Udacity called Audacity that focuses on creating finance courses}
+Goal: To increase student engagement
+User flow: Customer funnel (largest number of  events at the top, where customers go back and forth the funnel)
+\begin{itemize}
+    \item Homepage visits
+    \item Exploring the site
+    \item Create account
+    \item Complete a purchase/class
+\end{itemize}
+Experiment 
+Initial Hypothesis: Change the \textcolor{blue}{Start Now} button from \textcolor{orange}{\textit{orange}} to \textcolor{magenta}{\textit{pink}} will increase how many students explore Audacity's courses
+
+Which metric to use?
+\begin{itemize}
+    \item Total number of courses completed (BUT time consuming and not practical as it can take months for students to complete the course)
+    \item  Number of clicks (BUT if more total clicks in one version but with lower ration than other version) 
+    \item CTR (click-through-rate) = $\frac{Number\:of \:clicks}{Number\:of\:page\:views}$
+    \item CTR (click-through-probability) = $\frac{Unique\: visitors\:who\:click}{Unique\:visitors\:to\:page}$
+\end{itemize}
+
+\begin{tcolorbox}[colback=cyan!10, boxrule=0mm, sharp corners]
+\textit{Use rate when you want to measure the usability of a site and a probability when you want to measure a total impact and disregard double-clicks, reloads, etc.}
+\end{tcolorbox}
+
+Updated Hypothesis: Change the \textcolor{blue}{Start Now} button from \textcolor{orange}{\textit{orange}} to \textcolor{magenta}{\textit{pink}} will increase the click-through-probability of the button
+
+Repeated measurement of click-through-probability
+\begin{itemize}
+    \item visitors = 1000
+    \item unique clicks = 100
+    \item click-through-probability $\approx 10\%$
+    
+    Which results would surprise you if you repeated the measurement?
+    \begin{itemize}
+        \item 100
+        \item 101
+        \item 110
+        \textcolor{cyan}{\item 150 (above what I expected)}
+        \textcolor{cyan}{\item 900 (above what I expected)}
+    \end{itemize}
+\end{itemize}
+
+\subsection{Hypothesis Testing}
+
+$p_{cont}$ and $p_{exp}$ \\
+
+\textbf{Null hypothesis} $H_{0}$: If changing button had no effect, where $p_{exp} - p_{cont} = 0$
+
+\textbf{Alternative Hypothesis} $H_{A}$: $p_{exp} - p_{cont} \neq 0$
+
+\textbf{Steps}
+
+\begin{itemize}
+\item Measure $\hat{p_{cont}}$ and $\hat{p_{exp}}$
+\item Compute the probability that this difference would have arisen by chance if the null hypothesis were true. P($\hat{p_{exp}} - \hat{p_{cont}}|H_{0}$)
+\item Reject $H_{0}$ if the above probability is small enough (p $<$ 0.05)
+\end{itemize}
+
+\textbf{Question: Choosing $H_{0}$ and $H_{A}$}
+\begin{itemize}
+    \item Change checkout flow of online shopping site
+    \item Test old flow vs. new flow
+    \item Measure probability of completing checkout
+\end{itemize}
+Null hypothesis: The experimental and control groups have the same probability of completing a checkout
+
+Alternative Hypothesis: The experimental and control groups have a different probability of completing a checkout
+
+Then, what change in the click-through probability is substantive/practically significant?
+
+\textbf{Size your experiment appropriately, such that the statistical significance bar is lower than the practical significance bar}
+
+Audacity example: 2 percent change in the click-through probability would be practically significant
+
+\subsection{How Many Page Views} 
+
+\begin{itemize}
+    \item Probability of falsely concluding the difference: \textbf{$\alpha$} = P(reject null $| H_{0}$ true)
+    \item Probability of failing to reject $H_{0}$ when the $H_{0}$ was false: \textbf{$\beta$} = P(fail to reject | $H_{0}$ false)
+    \item \textbf{Small sample}: $\alpha$ is low, $\beta$ is high (Unlikely to launch a bad experiment, but likely to fail to launch an experiment that actually did have a difference you care about)
+    \item \textbf{Larger sample}: $\alpha$ same, $\beta$ lower (Beta goes down, Power increases)
+    \item Typically consider $\beta$ at your practical significance boundary
+    \item \textbf{Sensitivity}: $1-\beta$
+    \item In general, you want high sensitivity at the practical significance boundary. People often choose \textbf{80 percent}
+    \item If number of samples increase, SE will decrease, so the distribution of results will be narrower, and to keep $\alpha$ the same, the cutoffs for rejecting the $H_{0}$ will be closer to 0 (Mean). 
+\end{itemize}
+
+\subsection{Calculating Number of Page Views}
+
+\begin{itemize}
+    \item Built-in library
+    \item Look up answer in a table
+    \item Online calculator (where minimum detectable effect = Practical significance level)
+    \item E.g. How many page views will we need in each group?
+    \begin{itemize}
+        \item N = 1000
+        \item X = 100
+        \item $d_{min}$ = 0.02 (minimum difference we care about)
+        \item $\alpha$ = 0.05
+        \item $\beta$ = 0.02
+        \item Baseline conversion rate: $\frac{100}{1000} = 10\%$
+        \item Answer: 3623 page views per group
+    \end{itemize}
+\end{itemize}
+
+\begin{center}
+\begin{table}[h]
+\centering
+%\small
+%%\vspace{-2mm}
+\caption{How number of page views varies}
+%%\vspace{-2mm}
+\begin{tabular}{ |l|c|c|}
+  \hline
+  \textbf{Change} & \textbf{Increase page views} & \textbf{Decrease page views} \\
+  \hline
+  \textbf{Higher click-through-probability in control} & \checkmark & \\ 
+  (but still less than 0.05) &  & \\
+  \textbf{Increased practical significance level ($d_{min}$)} &  & \checkmark \\
+  \textbf{Increased confidence level ($1-\alpha$)} & \checkmark & \\
+  \textbf{Higher sensitivity ($1-\beta$)} & \checkmark & \\
+  \hline
+\end{tabular}
+%%\vspace{-2mm}
+\end{table}
+\end{center}
+
+\begin{itemize}
+    \item Standard Error depends on the click-through-probability.
+    $SE = \sqrt{\frac{p(1-p)}{N}}$
+    As you probability gets closer to 0.5 and further away from the extremes (e.g. 0.1 or 0.9), SE increases.Therefore, need to increase number of page views to get SE to original level.
+    \item $d_{min}$: larger changes are easier to detect so do not need as many page views.
+    \item Increase CI: Want to be more certain that a change has occurred before rejecting $H_{0}$. Want to keep sensitivity the same so need to increase page views.
+    \item Increase sensitivity: Need to collect more page views to narrow the distribution.
+\end{itemize}
+
+\subsection{Analyze Results}
+
+\begin{itemize}
+    \item $N_{cont} = 10,072$, $N_{exp} = 9886$
+    \item $X_{cont} = 974$, $X_{exp} = 1242$
+    \item $d_{min} = 0.02$
+    \item Confidence Level = $95\%$
+    \item Pooled Probability = $\hat{p_{pool}} = \frac{974+1242}{10,072+9886} = 0.111$
+    \item Pooled SE = $SE_{pool} = \sqrt{0.111(1-0.111)(\frac{1}{10,072} + \frac{1}{9886})} = 0.00445$
+    \item Estimated Difference = $\hat{d} = \frac{X_{exp}}{N_{exp}} - \frac{X_{cont}}{N_{cont}} = 0.0289$
+    \item Margin of Error = $m =SE_{pool}*1.96=0.0087$ (z-score for CI of 95$\%$)
+    \item Lower Bound =$\hat{d} - m = 0.0202$ 
+    \item Upper Bound = $\hat{d} + m = 0.0376$
+    \item It is highly probable that click-through-probability changed by at least 2$\%$
+    \item Both statistical and practical significance satisfied: $2\%$ and $5\%$
+    \item Therefore, launch the new version
+\end{itemize}
+
+\subsection{Confidence Interval Cases}
+
+\includegraphics[scale=0.48]{image.png}
+\begin{itemize}
+    \item \textbf{Second result}: Often called \texbf{neutral}. No statistically significant change from 0 since CI includes 0 and you're also confident that there's not a practically significant change.
+    \item \textbf{Third result}: Result is statistically significant. Confident that there was a positive change, but not practically significant. Confident there was a change, but do not care about the magnitude of the change. Therefore, not worth effort to launch the change.
+    \item \textbf{Fourth result}: If you ran an experiment and found that it could be causing your number of users to increase by 10$\%$ or decrease by 10$\%$. Therefore, not enough power to draw a strong conclusion.
+    \item \textbf{Fifth result}: Point estimate is beyond what is practically significant. But CI overlaps at 0, so there might not even be a change at all. Therefore, repeat with greater power. 
+    \item \textbf{Sixth result}: Possible that change is not practically significant. Therefore, run tests with greater power. 
+\end{itemize}
+\textbf{What to do when the last three cases come up but you do not have time to run a new experiment?}
+
+\begin{itemize}
+    \item Communicate to decision-makers when they're going to have to make a judgement, and take a risk, because the data is uncertain
+    \item Use other factors: Strategic business issues
+\end{itemize}
+
+
+\subsection{Statistics Review}
+\begin{itemize}
+    \begin{shaded}
+    \item \textbf{Binomial Distribution} \\ (Successes/Failures)
+    e.g. (click = success,  no click = failure)
+    \begin{itemize}
+        \item biased user who has $p = \frac{3}{4}$ of clicking a page 
+        \item success = click, failure = no click
+        \item As $N \to \infty$, binomial $\to$ normal
+        \item $mean = p$, $std dev = \sqrt{\frac{p(1-p)}{N}}$
+        \item Assume p not known
+        \begin{itemize}
+            \item e.g. N = 20, clicks = 16, Estimate the bias $\hat{p} = \frac{4}{5}$
+        \end{itemize}
+        \item When to use binomial
+        \begin{itemize}
+            \item 2 types of outcomes
+            \item independent events
+            \item identical distribution: p same for all 
+        \end{itemize}
+    \end{itemize}
+    \end{shaded}
+    \begin{shaded}
+    \item \textbf{Confidence Intervals}\\
+    For a 95$\%$ confidence interval, if we theoretically repeated the experiment over and over again, we would expect the interval we construct around the sample mean to cover the true value in the population 95$\%$ of the time
+    \begin{itemize}
+        \item $\hat{p} = \frac{X}{N}$ where X = number of users clicked, N = number of users
+        \item e.g. $\hat{p} = 0.1$
+        \item \textit{To use normal distribution if $N\hat{p} > 5$ and $N(1-\hat{p})>5$}
+        \item \textbf{Standard Error SE} = $\sqrt{\frac{p(1-p)}{N}}$
+        \item \textbf{Margin of Error m} = $zscore * SE$ = $z* \sqrt{\frac{\hat{p}(1-\hat{p})}{N}}$ \\
+        The amount of random variation we expect in our sample is a proportion of both successes and the size of the sample. When the success probability is further from 0.5, then SE would be smaller, which means CI will be smaller. \\
+        Similarly, if N is larger, the SE and CI will be smaller. 
+        For 95$\%$ CI, z-score will be 1.96 for two-tailed CI.\\
+        m = 0.019
+        margin = 0.081 to 0.119 
+    \end{itemize}
+    \end{shaded}
+    \begin{shaded}
+    \item \textbf{Hypothesis Testing}
+    \begin{itemize}
+        \item Null hypothesis: There is no difference in click-through-probability between our control and experiment
+        \item Alternative hypothesis: Are we interested in the difference, or just higher or lower?
+    \end{itemize}
+    \end{shaded}
+    
+    \begin{shaded}
+    \item \textbf{Pooled Standard Error}
+    \begin{itemize}
+        \item Number of users who click in each group: $X_cont$, $X_exp$
+        \item Total number of users in each group: $N_cont$, 
+        \item First, calculate pooled probability of a click (total probability of a click across groups)
+        
+        $\hat{p_{pool}} = \frac{X_{cont} + X_{exp}}{N_{cont}+N_{exp}}$
+        \item Then, calculate pooled standard error \\
+        $SE_{pool} = \sqrt{\hat{p_{pool}}*(1-\hat{p_{pool}})*(\frac{1}{N_{cont}}+\frac{1}{N_{exp}})}$
+        
+        Difference $\hat{d} = \frac{X_{exp}}{N_{exp}} - \frac{p_{cont}}{N_{cont}}
+        = \hat{p_{exp} - \hat{p_{cont}}}$
+        
+        \item Under $H_{0}:$, true difference $d = 0$, $\hat{d} \sim N(0, SE_{pool})$
+        \item If $\hat{d} > 1.96*SE_{pool}$ or $\hat{d} < -1.96*SE_{pool}$, reject $H_{0}$
+    \end{itemize}
+    \end{shaded}
+    
+       \begin{shaded}
+    \item \textbf{Size vs. Power Trade-Off}
+    \begin{itemize} 
+        \item Statistical power: e.g. How many page views needed in order to get a statistically significant result
+        \item \textbf{Power has an inverse trade-off with size}: The smaller the change that you want to detect or the increased confidence you want to have in the result, means larger experiment required, so more page views in control and experiment
+    \end{itemize}
+    \end{shaded}
+\end{itemize}
+
+
+
+
+\end{document}

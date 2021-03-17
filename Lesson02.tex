@@ -1,0 +1,293 @@
+\documentclass[10pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amsthm,amsfonts,amssymb,amscd}
+\usepackage{multirow,booktabs}
+\usepackage[table]{xcolor}
+\usepackage{fullpage}
+\usepackage{lastpage}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{mathrsfs}
+\usepackage{wrapfig}
+\usepackage{setspace}
+\usepackage{calc}
+\usepackage{multicol}
+\usepackage{cancel}
+\usepackage[retainorgcmds]{IEEEtrantools}
+\usepackage[margin=3cm]{geometry}
+\usepackage{amsmath}
+\newlength{\tabcont}
+\setlength{\parindent}{0.0in}
+\setlength{\parskip}{0.03in}
+\usepackage{empheq}
+\usepackage{framed}
+\usepackage[most]{tcolorbox}
+\usepackage{xcolor}
+\colorlet{shadecolor}{orange!15}
+
+\parindent 0in
+\parskip 10pt
+\geometry{margin=0.65in, headsep=0.25in}
+\theoremstyle{definition}
+\newtheorem{defn}{Definition}
+\newtheorem{reg}{Rule}
+\newtheorem{exer}{Exercise}
+\newtheorem{note}{Note}
+\begin{document}
+\setcounter{section}{0}
+\title{A/B Testing Notes}
+
+\thispagestyle{empty}
+
+\begin{center}
+{\LARGE \bf Udacity A/B Testing Lesson 2 Notes}\\
+{\large Jung Ah Shin}\\
+Feb 2021
+\end{center}
+\section{Policy and Ethics for Experiments}
+\subsection{Introduction}
+Examples of Cases where participants mau not have been protected
+\begin{itemize}
+    \item Tuskegee syphilis experiment
+    Approximately 600 rural African-American men in Tuskegee (1932-1972) thought they were receiving free healthcare from the government when they were being cited regarding the natural progression of untreated syphilis. These men were not informed of the possible treatment and not treated.
+    \item Milgram experiment
+    Early 1960s measured the willingness of studied participants to obey the authority figure who instructed them to administer electric shocks to a third person. Participants may have been damaged psychologically.
+    \item Facebook experiment
+    Studied how emotions can be spread on social media. Risk to the participants is substantially lower than the aforementioned ones and there is no discussion about the potential benefits that might result from such a study.
+\end{itemize}
+
+\subsection{Four Main Principles}
+
+\begin{shaded}
+\begin{enumerate}
+    \item \textbf{Risk}
+    What risk is the participant being exposed to?
+    \item \textbf{Benefit}
+    What benefits might be the outcome of the study?
+    \item \textbf{Choice}
+    What other choices do participants have?
+    \item \textbf{Privacy}
+    What expectation of privacy and confidentiality do participants have?
+\end{enumerate}
+\end{shaded}
+
+\subsection{Risk}
+Main threshold: Whether the risk exceeds "minimal risk" \\
+Minimal risk: Probability and magnitude of a harm that a participant would encounter in normal daily life. Harm considered encompasses physical, psychological and emotional, social, and economic concerns.\\
+If risk exceeds minimal risk, then informed consent is required.
+
+\textbf{Assessing Risk}
+
+\begin{center}
+\begin{table}[h]
+\centering
+%\small
+%%\vspace{-2mm}
+\caption{Is risk greater than minimal risk?}
+%%\vspace{-2mm}
+\begin{tabular}{ |l|c|}
+  \hline
+  \textbf{Situation} & \textbf{Risk}  \\
+  \hline
+  Search engine tests change adding price info to results page  &  \\
+  \hline
+  Health app lets users know possible consequence of their diets & \checkmark \\
+  \hline
+  Online encyclopedia tests changing the location of the search bar &  \\
+  \hline
+\end{tabular}
+%%\vspace{-2mm}
+\end{table}
+\end{center}
+\begin{itemize}
+    \item First point: The search engine is simply providing additional information that was already publicly available
+    \item Second point: Potentially more than minimal risk as it's providing medical advice tailored to individuals. If advice is incorrect, could have health risks. Depending on the information given, the app may be subject to additional FDA regulation
+    \item Third point: Harmless change
+\end{itemize}
+
+\subsection{Benefits}
+What benefits might result from the study? 
+It is important to be able to state what the benefit would be from completing the study.
+
+\subsection{Alternatives}
+What other choices do participants have?
+The main issue is that the fewer alternatives that participants have, the more issue that there is around coercion and whether participants really have a choice in whether to participate or not.
+In online experiments, the issues to consider are the other alternative services, switching costs in terms of time, money, information, etc.
+
+\subsection{Data Sensitivity}
+What data is being collected, and what is the expectation of privacy and confidentiality?
+\begin{itemize}
+    \item Do participants understand what data is being collected about them?
+    \item What harm would befall them should that data be made public?
+    \item Would they expect that data to be considered private and confidential?
+\end{itemize}
+If new data is being gathered, then:
+\begin{itemize}
+    \item What data is being gathered? How sensitive is it? Does it include financial and health data?
+    \item Can the data being gathered be tied to the individual, i.e. is it considered personally identifiable?
+    \item How is the data being handled? Security measures? What level of confidentiality can participants expect?
+    \item What harm would befall the individual should the data become public, where the harm would encompass health, psychological/emotional, social, and financial concerns?
+\end{itemize}
+Three main issues with data collection with regards to experiments:
+\begin{itemize}
+    \item For new data being collected and stored, how sensitive is the data and what are the internal safeguards for handling that data?
+    \item For that data, how will it be used and how will participants' data be protected? How are participants guaranteed that their data, which was collected for use in the study, will not be used for some other purpose? This becomes more important as the sensitivity of the data increases.
+    \item What data may be published more broadly, and does that introduce any additional risk to the participants?
+\end{itemize}
+
+Difference between pseudonyms and anonymous data
+\begin{itemize}
+    \item \textbf{Identified}: Data is stored and collected with personally identifiable information. E.g. Names, IDs. HIPAA is a common standard, and that standard has 18 identifiers that it considers personally identifiable. e.g. device ID
+    \item \textbf{Anonymous}: Data is stored and collected without any personally identifiable information. This data can be considered \textbf{pseudonymous} if stored in a randomly generated id such as a cookie that gets assigned on some event, such as the first time that a user goes to an app and does not have such an id stored.
+    In most cases, anonymous still has time-stamps (one of HIPAA 18 identifiers).
+    \item \textbf{Anonymized data}: Identified or anonymous data that has been looked at and guaranteed in some way that the re-identification risk is low to non-existent. 
+\end{itemize}
+
+\textbf{Assessing data sensitivity}
+
+\begin{center}
+\begin{table}[h]
+\centering
+%\small
+%%\vspace{-2mm}
+\caption{Should the following data be considered sensitive?}
+%%\vspace{-2mm}
+\begin{tabular}{ |l|c|}
+  \hline
+  \textbf{Situation} & \textbf{Sensitive}  \\
+  \hline
+  Existing census data with race, age, and gender by zipcode  &  \\
+  \hline
+  Number of users visiting specific sites each day (e.g. HitWise to gather counts) &  \\
+  \hline
+  User-entered glucose levels with timestamp and anonymous id & \checkmark \\
+  \hline
+  Achievements, kills, and level advances in an online game by anonymous id &  \\
+  \hline
+  Number of purchases and total money spent by a zipcode &  \\
+  \hline
+  Credit card information & \checkmark \\
+  \hline
+\end{tabular}
+%%\vspace{-2mm}
+\end{table}
+\end{center}
+
+\begin{itemize}
+    \item First point: Too granular for re-identification (i.e. aggregated)
+    \item Second point: Can't identify individuals. Only total numbers
+    \item Third point: Timestamps could identify. Glucose levels are health data. Regulation such as HIPAA
+    \item Fourth point: Game data not sensitive
+    \item Fifth item: Totals are stored for zipcode. Too granular for re-identification. Ensure enough data points to guarantee that data is sufficiently anonymized
+    \item Sixth item: Very sensitive
+\end{itemize}
+
+\subsection{Summary}
+
+For online data being gathered:
+\begin{itemize}
+    \item Are users being informed?
+    \item What user identifiers are tied to the data?
+    \item What type of data is being collected?
+    \item What is the level of confidentiality and security?
+\end{itemize}
+
+What about informed consent? \\
+Participants are told the risk they'd face, what benefits they'd get, what alternatives are available, what data is being gathered, and how the data is being handled. 
+
+Which tests need further review?
+
+\begin{center}
+\begin{table}[h]
+\centering
+%\small
+%%\vspace{-2mm}
+\caption{Which tests need further review or possibly obtain user consent?}
+%%\vspace{-2mm}
+\begin{tabular}{ |l|c|}
+  \hline
+  \textbf{Situation} & \textbf{Need further review}  \\
+  \hline
+  Survey about net worth on financial news site. Test survey at bottom of article vs.   &   \\
+  after first page, not allowing user to advance until they complete the study &  \\
+  \hline
+  Different menu layouts for meal delivery company &  \\
+  \hline
+  Test different ways of presenting user heart rate data &  \checkmark \\
+  \hline
+\end{tabular}
+%%\vspace{-2mm}
+\end{table}
+\end{center}
+
+\begin{itemize}
+    \item First point: Depends on what information is being gathered in the survey. If the survey collects personal info, then info is sensitive. If no personal info is gathered, then survey should be fine to run. \textbf{Users can voluntarily choose what to do.} Ethical considerations also increase if user can only read the article only in exchange for their survey info. 
+    \item Second point: No new sensitive being collected. Minimal risk
+    \item Third point: Need further review. Physical fitness is important to good health, presentations that confuser users or encourage users to exercise too much or too little could have risk. Data being collected is sensitive, so needs to be carefully secured and anonymized. Depending on the data, may not be possible to anonymize while keeping same level of granularity, therefore need to aggregate the data
+\end{itemize}
+
+\textbf{Provided information}
+
+\begin{center}
+\begin{table}[h]
+\centering
+%\small
+%%\vspace{-2mm}
+\caption{Which information is ethically necessary to provide to users?}
+%%\vspace{-2mm}
+\begin{tabular}{ |l|c|}
+  \hline
+  \textbf{Information} & \textbf{Need to be provided to users}  \\
+  \hline
+  A Terms of Service (TOS) or a Privacy Policy   & \checkmark  \\
+  \hline
+  History of funding &  \\
+  \hline
+  Navigation bar &   \\
+  \hline
+   List of experiments you are planning on running &  \\
+  \hline
+   Search bar &   \\
+  \hline
+\end{tabular}
+%%\vspace{-2mm}
+\end{table}
+\end{center}
+
+\begin{itemize}
+    \item First point: A clear statement of what data you'll collect and how you will use it is ethically necessary
+    \item Second point: Not necessary
+    \item Third point: Not ethical requirement
+    \item Fourth point: Users could be fully informed, but for some experiments, giving out this information could skew the results
+    \item Fifth point: Not ethically necessary
+\end{itemize}
+
+\textbf{Internal Training}
+
+\begin{center}
+\begin{table}[h]
+\centering
+%\small
+%%\vspace{-2mm}
+\caption{Which information is ethically necessary for anyone who runs A/B tests to know?}
+%%\vspace{-2mm}
+\begin{tabular}{ |l|c|}
+  \hline
+  \textbf{Information} & \textbf{Need to know}  \\
+  \hline
+  Which questions to consider when evaluating ethics   & \checkmark  \\
+  \hline
+  History of A/B testing &  \\
+  \hline
+  History of IRBs &   \\
+  \hline
+   Data policy detailing acceptable data uses & \checkmark \\
+  \hline
+   Principles to uphold & \checkmark  \\
+  \hline
+\end{tabular}
+%%\vspace{-2mm}
+\end{table}
+\end{center}
+
+\end{document}
